@@ -8,8 +8,10 @@
 ## 📌 Features
 - Captures keystrokes using `pynput`
 - Symmetrically encrypts logs with `cryptography.fernet`
+- Uses a **persistent key** stored in `key.txt` (generated automatically on first run)
 - Saves encrypted logs to timestamped files
 - Simulates exfiltration by sending logs to a local server
+- Hotkey **kill switch** (default: `Ctrl + Shift + Q`)
 - Organized with a class-based design
 
 ---
@@ -54,13 +56,17 @@ In another terminal, run:
 ```bash
 python keylogger.py
 ```
+- Press Ctrl+Shift+Q to stop the logger (hotkey kill-switch).
+
+- Logs will be saved as encrypted .enc files.
+  
 ## 3. Test Keystrokes
 
-Type normally in your VM
+- Type normally in your VM
 
-Press special keys (space, enter, arrows, etc.)
+- Press special keys (space, enter, arrows, etc.)
 
-Try rapid typing or long sessions
+- Try rapid typing or long sessions
 
 ## 🔒 Logs
 
@@ -68,9 +74,29 @@ Try rapid typing or long sessions
 
 - Logs are also base64-encoded and sent to the server
 
+- Logs are encrypted with the persistent key in key.txt 
+
 - Example cleanup:
 
+```bash
 rm log-*.enc
+```
+## 🔓 Decrypting Logs with key.txt
+
+- The keylogger generates or reuses a persistent Fernet key in key.txt.
+- To decrypt logs, use the provided decrypt_file.py script.
+
+Example: Basic decryption
+```bash
+python decrypt_file.py log-20250907-123456.enc
+```
+
+This produces a plaintext file:
+
+```bash
+log-20250907-123456.dec.txt
+```
+
 
 ## 🧪 Testing Scenarios
 
@@ -81,6 +107,8 @@ rm log-*.enc
 - ✅ Long-running sessions
 
 - ✅ Network transmission reliability
+  
+- ✅ Kill switch hotkey (Ctrl+Shift+Q)
 
 - ✅ Error handling on disconnect
 
@@ -100,7 +128,7 @@ rm log-*.enc
   
 ## 📊 Flow Diagram
 
-[Keyboard Input] → [Capture Keystroke] → [Encrypt Log]
+[Keyboard Input] → [Capture Keystroke] → [Encrypt Log with key.txt]
         ↓                          ↓
  [Save to .enc File]        [Base64 Encode]
         ↓                          ↓
